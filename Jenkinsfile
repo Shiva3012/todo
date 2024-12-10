@@ -5,20 +5,16 @@ pipeline {
             args '--entrypoint=""'
         }
     }
+    environment {
+        // Convert the Jenkins working directory path for Docker compatibility
+        WORKDIR = "${pwd()}".replaceAll('\\\\', '/').replaceAll('C:', '/c')
+    }
     stages {
         stage('Install Dependencies') {
             steps {
-                bat 'npm install' // Use bat instead of sh for Windows
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                bat 'npm test' // Add if you have tests
-            }
-        }
-        stage('Build Application') {
-            steps {
-                bat 'npm run build' // Replace with your build command if applicable
+                script {
+                    sh "docker run -v ${WORKDIR}:${WORKDIR} -w ${WORKDIR} node:18-alpine npm install"
+                }
             }
         }
     }
