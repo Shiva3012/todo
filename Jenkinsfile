@@ -1,25 +1,24 @@
 pipeline {
     agent {
-        docker { image 'node:18-alpine' }
+        docker {
+            image 'node:18-alpine'
+            args '--entrypoint=""'
+        }
     }
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                checkout scm
+                bat 'npm install' // Use bat instead of sh for Windows
             }
         }
-        stage('Build Docker Image') {
+        stage('Run Tests') {
             steps {
-                script {
-                    docker.build('todo-app')
-                }
+                bat 'npm test' // Add if you have tests
             }
         }
-        stage('Run Application') {
+        stage('Build Application') {
             steps {
-                script {
-                    docker.image('todo-app').run('-p 3000:3000')
-                }
+                bat 'npm run build' // Replace with your build command if applicable
             }
         }
     }
